@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+  <!-- <script src="https://cdn.bootcss.com/vue/2.6.11/vue.min.js"></script> -->
+  <script src="./CVue.js"></script>
+</head>
+<body>
+  <div id="app">
+    <h1>{{name}}</h1>
+    <hr>
+    <ul>
+      <!-- <li v-for='(a, b) in list'>{{a}}</li> -->
+    </ul>
+    <p v-text='text'></p>
+    <input type="text" name="input" v-model='model'>
+    <div v-text='person.age'></div>
+    <div v-html='html'></div>
+    <button v-on:click='test'>test</button>
+    <button @click='test'>test2</button>
+    <div v-bind:class='red'>红色</div>
+    <div :class='green'>绿色</div>
+  </div>
+  <script>
+    new CVue({
+      el: '#app',
+      data: {
+        name: 'vue源码学习',
+        list: ['compile', 'observe', 'watcher'],
+        text: 'v-text指令的内容',
+        html: '<a href="#">aaaaa00</a>',
+        model: 'hhhhhhh',
+        person:{
+          age:18,
+          name:'cc'
+        },
+        red: 'red',
+        green: 'green'
+      },
+      methods: {
+        test() {
+          console.log('test');
+          console.log(this)
+        }
+      },
+    })
+  </script>
+  <style>
+    .red {
+      color: red;
+    }
+    .green {
+      color: green;
+    }
+  </style>
+</body>
+</html>
