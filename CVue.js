@@ -6,11 +6,27 @@ const compileUtil = {
       return data[currentVal]
     },vm.$data)
   },
+  setValue(expr, vm, inputVal){
+    const a = expr.split('.')
+    return a.reduce((data, currentVal) => {
+      // console.log(currentVal)
+      data[currentVal] = inputVal
+    },vm.$data)
+  },
+  getContentVal(expr, vm){
+    return expr.replace(/\{\{(.+?)\}\}/g, (...args) => {
+      // console.log(args)
+      return this.getValue(args[1], vm)
+    })
+  },
   text(node,expr,vm) {
     let value;
     if(expr.indexOf('{{') !== -1) {
       value = expr.replace(/\{\{(.+?)\}\}/g, (...args) => {
         // console.log(args)
+        new Watcher(vm, args[1], (newVal) => {
+          this.updater.textUpdater(node, this.getContentVal(expr, vm))
+        })
         return this.getValue(args[1], vm)
       })
     } else {
@@ -20,10 +36,21 @@ const compileUtil = {
   },
   html(node,expr,vm) {
     const value = this.getValue(expr, vm)
+    new Watcher(vm, expr, (newVal) => {
+      this.updater.htmlUpdater(node, newVal)
+    })
     this.updater.htmlUpdater(node, value)
   },
   model(node,expr,vm) {
     const value = this.getValue(expr, vm)
+    //数据驱动视图
+    new Watcher(vm, expr, (newVal) => {
+      this.updater.modelUpdater(node, newVal)
+    })
+    //视图驱动数据
+    node.addEventListener('input',(e) => {
+      this.setValue(expr, vm, e.target.value)
+    })
     this.updater.modelUpdater(node, value)
   },
   on(node,expr,vm, event) {
@@ -142,8 +169,22 @@ class CVue {
     this.$options = options
     if(this.$el) {
       //实现一个数据观察者
+      new Observer(this.$data)
       //实现一个指令解析器
       new Compile(this.$el, this)
+      this.proxyData(this.$data)
+    }
+  }
+  proxyData(data) {
+    for(let key in data) {
+      Object.defineProperty(this, key, {
+        get() {
+          return data[key]
+        },
+        set(newVal){
+          data[key] = newVal
+        }
+      })
     }
   }
 }

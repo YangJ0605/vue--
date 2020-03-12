@@ -5,16 +5,20 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Document</title>
   <!-- <script src="https://cdn.bootcss.com/vue/2.6.11/vue.min.js"></script> -->
+  <script src="./Observer.js"></script>
   <script src="./CVue.js"></script>
 </head>
 <body>
   <div id="app">
     <h1>{{name}}</h1>
+    <p>vue是采用数据劫持配合发布者-订阅者模式的方式，通过Object.defineProperty来劫持各个属性的getter和setter，在数据发生变动的时候，发布消息给依赖收集器（Dep），去通知观察者（observe），作出相应的回调函数，去更新视图。</p>
+    <p>MVVM作为绑定的入口，主要包括observe，watcher和compile三者，通过observe来监听mode数据的变化，通过compile来解析模板指令，最后利用watcher来作为两者之间的桥梁，达到数据变化时，视图更新；视图交互变化时，数据model更新</p>
     <hr>
     <ul>
       <!-- <li v-for='(a, b) in list'>{{a}}</li> -->
     </ul>
     <p v-text='text'></p>
+    <div>model:{{model}}</div>
     <input type="text" name="input" v-model='model'>
     <div v-text='person.age'></div>
     <div v-html='html'></div>
@@ -24,7 +28,7 @@
     <div :class='green'>绿色</div>
   </div>
   <script>
-    new CVue({
+    const vm = new CVue({
       el: '#app',
       data: {
         name: 'vue源码学习',
